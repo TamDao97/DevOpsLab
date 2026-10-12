@@ -4,13 +4,13 @@ services:
     container_name: sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=tamdc8897@
+      - SA_PASSWORD=Tamdc8897@
     ports:
       - "1433:1433"
     volumes:
       - mssql_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "(/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Your_strong_password123' -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Your_strong_password123' -Q 'SELECT 1')"]
+      test: ["CMD-SHELL", "(/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'Tamdc8897@' -Q 'SELECT 1' || /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Tamdc8897@' -Q 'SELECT 1')"]
       interval: 10s
       timeout: 5s
       retries: 20
