@@ -1,0 +1,343 @@
+{
+  "info": {
+    "name": "ECommerce Gateway Flow Test",
+    "description": "Test luồng request đi qua API Gateway tới các microservices",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0. REGISTER (via Gateway)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json();",
+              "  pm.environment.set('userId', data.id);",
+              "  pm.environment.set('userName', data.name);",
+              "  pm.environment.set('userEmail', data.email);",
+              "  console.log('✅ User registered, ID saved to environment');",
+              "} else {",
+              "  console.log('❌ Failed to register');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"NewUser\", \"email\": \"newuser@example.com\"}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/auth/register",
+          "host": ["{{gateway_url}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "1. GET TOKEN (via Gateway)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json();",
+              "  pm.environment.set('token', data.accessToken);",
+              "  pm.environment.set('expiresIn', data.expiresIn);",
+              "  console.log('✅ Token saved to environment');",
+              "} else {",
+              "  console.log('❌ Failed to get token');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Alice\", \"email\": \"alice@example.com\"}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/auth/token",
+          "host": ["{{gateway_url}}"],
+          "path": ["auth", "token"]
+        }
+      }
+    },
+    {
+      "name": "2. GET All Users (via Gateway)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/users",
+          "host": ["{{gateway_url}}"],
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "3. GET User by ID (via Gateway)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/users/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["users", "1"]
+        }
+      }
+    },
+    {
+      "name": "4. CREATE User (via Gateway)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Charlie\", \"email\": \"charlie@example.com\"}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/users",
+          "host": ["{{gateway_url}}"],
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "5. UPDATE User (via Gateway)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Alice Updated\", \"email\": \"alice.updated@example.com\"}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/users/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["users", "1"]
+        }
+      }
+    },
+    {
+      "name": "6. DELETE User (via Gateway)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/users/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["users", "1"]
+        }
+      }
+    },
+    {
+      "name": "7. GET All Products (via Gateway)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/products",
+          "host": ["{{gateway_url}}"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "8. GET Product by ID (via Gateway - with Creator Info)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/products/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "9. CREATE Product (via Gateway)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Monitor\", \"price\": 299.99, \"quantity\": 50, \"createdByUserId\": 1}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/products",
+          "host": ["{{gateway_url}}"],
+          "path": ["products"]
+        }
+      }
+    },
+    {
+      "name": "10. UPDATE Product (via Gateway)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Keyboard Pro\", \"price\": 79.99, \"quantity\": 75}"
+        },
+        "url": {
+          "raw": "{{gateway_url}}/products/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "11. DELETE Product (via Gateway)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "{{gateway_url}}/products/1",
+          "host": ["{{gateway_url}}"],
+          "path": ["products", "1"]
+        }
+      }
+    },
+    {
+      "name": "DIRECT: UserService /users (không qua Gateway)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": ["users"]
+        }
+      }
+    },
+    {
+      "name": "DIRECT: ProductService /products (không qua Gateway)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5002/products",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5002",
+          "path": ["products"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "gateway_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "expiresIn",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

@@ -17,7 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProductService", Version = "v1" }); // đổi "UserService" thành "ProductService" ở project kia
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProductService", Version = "v1" });
 
     var jwtScheme = new OpenApiSecurityScheme
     {
@@ -39,6 +39,13 @@ builder.Services.AddSwaggerGen(c =>
     {
         { jwtScheme, Array.Empty<string>() }
     });
+
+    // Include XML documentation
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, "ProductService.xml");
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
 });
 
 builder.Services.AddDbContext<ProductDbContext>(opts =>
@@ -96,8 +103,19 @@ using (var scope = app.Services.CreateScope())
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //}
+// Redirect root to swagger
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/swagger/index.html", permanent: false);
+    return Task.CompletedTask;
+});
+
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProductService v1");
+    c.RoutePrefix = "swagger";
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
